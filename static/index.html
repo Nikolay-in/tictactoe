@@ -6,8 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-Tac-Toe</title>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
     <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./src/app.js" type="module"></script>
 </head>
 
 <body>
@@ -23,19 +24,19 @@
 
     <div id="board">
         <div class="row">
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
+            <div id="00" class="cell"></div>
+            <div id="01" class="cell"></div>
+            <div id="02" class="cell"></div>
         </div>
         <div class="row">
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
+            <div id="10" class="cell"></div>
+            <div id="11" class="cell"></div>
+            <div id="12" class="cell"></div>
         </div>
         <div class="row">
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
+            <div id="20" class="cell"></div>
+            <div id="21" class="cell"></div>
+            <div id="22" class="cell"></div>
         </div>
     </div>
 </body>
