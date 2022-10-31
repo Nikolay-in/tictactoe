@@ -1,6 +1,12 @@
 #board {
     width: 150px;
     display: none;
+    cursor: pointer;
+}
+
+#board.inactive {
+    cursor: not-allowed;
+    background-color: rgb(146, 146, 146);
 }
 
 .row {
@@ -23,4 +29,8 @@
     float: left;
     margin: 0;
     padding: 0;
+    text-align: center;
+    line-height: 50px;
+    font-size: 36px;
+    user-select: none;
 }
