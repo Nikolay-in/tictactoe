@@ -5,6 +5,7 @@
 ##### Features
 
 - Separate rooms
+- Chat functionality
 - Maximum 2 players in a room
 
 ## Start
