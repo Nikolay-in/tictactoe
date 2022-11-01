@@ -29,7 +29,6 @@ function onSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const roomId = formData.get('room');
-    roomName.textContent = roomId;
     init(roomId);
 }
 
@@ -44,29 +43,30 @@ function init(roomId) {
         symbol = newSymbol;
         socket.on('position', place);
         socket.on('newGame', clearBoard);
-        enterRoom();
+        socket.on('message', onMessage);
+        socket.on('boardStatus', boardStatus);
+        socket.on('error', (err) => { alert(err); });
+        enterRoom(roomId);
     });
-
-    socket.on('message', (msg) => {
-        chatArea.value += `${msg}\n`;
-        chatArea.scrollTop = chatArea.scrollHeight;
-    });
-
-    socket.on('boardStatus', (status) => {
-        if (status == true) {
-            board.classList.remove('inactive');
-        } else {
-            board.classList.add('inactive');
-        }
-    });
-
-    socket.on('error', (err) => { alert(err); });
 }
 
-function enterRoom() {
+function onMessage(msg) {
+    chatArea.value += `${msg}\n`;
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function boardStatus(status) {
+    if (status == true) {
+        board.classList.remove('inactive');
+    } else {
+        board.classList.add('inactive');
+    }
+}
+
+function enterRoom(roomId) {
+    roomName.textContent = roomId;
     initDiv.style.display = 'none';
     game.classList.remove('invisible');
-    clearBoard();
 }
 
 function clearBoard() {
