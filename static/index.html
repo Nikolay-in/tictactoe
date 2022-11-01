@@ -22,7 +22,7 @@
         </form>
     </div>
 
-    <div id="board">
+    <div id="board" class="invisible">
         <div class="row">
             <div id="00" class="cell"></div>
             <div id="01" class="cell"></div>
@@ -39,11 +39,12 @@
             <div id="22" class="cell"></div>
         </div>
     </div>
-
-    <form id="chatForm" class="invisible">
+    <form id="chatForm" class="invisible" autocomplete="off">
         <textarea name="chatArea" id="chatArea" rows="8" cols="50" disabled></textarea>
         <div id="messageInput">
-            <input type="text" name="message" id="message">
+            <div class="table-cell">
+                <input type="text" name="message" id="message">
+            </div>
             <input type="submit" value="Send">
         </div>
     </form>
