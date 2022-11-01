@@ -34,3 +34,16 @@
     font-size: 36px;
     user-select: none;
 }
+
+#chatForm {
+    display: inline-block;
+    margin-left: 25px;
+}
+
+#message {
+    width: 363px;
+}
+
+.invisible {
+    display: none !important;
+}
