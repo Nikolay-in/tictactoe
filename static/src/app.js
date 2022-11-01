@@ -112,13 +112,13 @@ function hasCombination() {
     }
 
     if (draw == true) {
-        endGame('draw');
+        endGame();
     }
 }
 
 function endGame(winner) {
     let msg;
-    if (winner == 'draw') {
+    if (winner == undefined) {
         msg = `Game ended as draw!\nDo you want a rematch?`;
     } else {
         msg = `Player ${winner} wins!\nDo you want a rematch?`;
