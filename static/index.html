@@ -12,42 +12,46 @@
 </head>
 
 <body>
-    <h1>Tic-Tac-Toe</h1>
+    <main>
+        <h1>Tic-Tac-Toe</h1>
 
-    <div id="init">
-        <h2>Room name</h2>
-        <form id="init-form">
-            <input type="text" name="room">
-            <input type="submit" value="Enter room">
-        </form>
-    </div>
-
-    <div id="board" class="invisible">
-        <div class="row">
-            <div id="00" class="cell"></div>
-            <div id="01" class="cell"></div>
-            <div id="02" class="cell"></div>
+        <div id="init">
+            <h2>Room name:</h2>
+            <form id="init-form">
+                <input type="text" name="room">
+                <input type="submit" value="Enter room">
+            </form>
         </div>
-        <div class="row">
-            <div id="10" class="cell"></div>
-            <div id="11" class="cell"></div>
-            <div id="12" class="cell"></div>
-        </div>
-        <div class="row">
-            <div id="20" class="cell"></div>
-            <div id="21" class="cell"></div>
-            <div id="22" class="cell"></div>
-        </div>
-    </div>
-    <form id="chatForm" class="invisible" autocomplete="off">
-        <textarea name="chatArea" id="chatArea" rows="8" cols="50" disabled></textarea>
-        <div id="messageInput">
-            <div class="table-cell">
-                <input type="text" name="message" id="message">
+        <div id="game" class="invisible">
+            <h2>Room name: <span id="roomname"></span><span id="leave">Leave Room</span></h2>
+            <div id="board" class="inactive">
+                <div class="row">
+                    <div id="00" class="cell"></div>
+                    <div id="01" class="cell"></div>
+                    <div id="02" class="cell"></div>
+                </div>
+                <div class="row">
+                    <div id="10" class="cell"></div>
+                    <div id="11" class="cell"></div>
+                    <div id="12" class="cell"></div>
+                </div>
+                <div class="row">
+                    <div id="20" class="cell"></div>
+                    <div id="21" class="cell"></div>
+                    <div id="22" class="cell"></div>
+                </div>
             </div>
-            <input type="submit" value="Send">
+            <form id="chatForm" autocomplete="off">
+                <textarea name="chatArea" id="chatArea" rows="8" cols="50" disabled></textarea>
+                <div id="messageInput">
+                    <div class="table-cell">
+                        <input type="text" name="message" id="message">
+                    </div>
+                    <input type="submit" value="Send">
+                </div>
+            </form>
         </div>
-    </form>
+    </main>
 </body>
 
 </html>

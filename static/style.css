@@ -37,7 +37,7 @@
 
 #chatForm {
     display: inline-block;
-    margin-left: 25px;
+    margin-left: 24px;
     width: 450px;
 }
 
@@ -64,4 +64,20 @@
 
 .invisible {
     display: none !important;
+}
+
+#leave {
+    float: right;
+    font-size: 0.8em;
+    text-decoration: underline;
+    cursor: pointer;
+    color: blue;
+}
+
+main {
+    width: 630px;
+}
+
+main h1 {
+    text-align: center;
 }
