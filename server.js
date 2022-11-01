@@ -46,17 +46,19 @@ function initGame(roomId, players, socket) {
 
     socket.on('newGame', () => {
         console.log('New game initiated');
-
-        for (let [socket, symbol] of players.entries()) {
-            socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
-        }
-
+        socket.emit('message', `System: New Game initiated. Your symbol is: ${players.get(socket)}\n`);
         io.to(roomId).emit('newGame');
     });
 
     socket.on('disconnect', () => {
-        console.log('Player left');
+        const player = players.get(socket);
         players.delete(socket);
+
+        for (let eachSocket of players.keys()) {
+            eachSocket.emit('message', `Player ${player} has left.`);
+        }
+
+        console.log('Player left');
     });
 
     let symbol = 'X';
@@ -70,7 +72,12 @@ function initGame(roomId, players, socket) {
     players.set(socket, symbol);
     console.log('Symbol: ', symbol);
     socket.emit('symbol', symbol);
-    socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
+    // socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
+
+
+    for (let eachSocket of players.keys()) {
+        eachSocket.emit('message', `Player ${players.get(socket)} has joined.`);
+    }
 }
 
 server.listen(3000, () => console.log('Server started on 3000'));
