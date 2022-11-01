@@ -6,9 +6,10 @@ const chatArea = document.getElementById('chatArea');
 const messageInput = document.getElementById('message');
 const roomName = document.getElementById('roomname');
 
+board.addEventListener('click', onClick);
+chatForm.addEventListener('submit', onChat);
 document.getElementById('init-form').addEventListener('submit', onSubmit);
 document.getElementById('leave').addEventListener('click', onLeave);
-chatForm.addEventListener('submit', onChat);
 
 let symbol = '';
 let socket = null;
@@ -43,7 +44,7 @@ function init(roomId) {
         symbol = newSymbol;
         socket.on('position', place);
         socket.on('newGame', clearBoard);
-        startGame();
+        enterRoom();
     });
 
     socket.on('message', (msg) => {
@@ -62,10 +63,9 @@ function init(roomId) {
     socket.on('error', (err) => { alert(err); });
 }
 
-function startGame() {
+function enterRoom() {
     initDiv.style.display = 'none';
     game.classList.remove('invisible');
-    board.addEventListener('click', onClick);
     clearBoard();
 }
 
@@ -90,7 +90,6 @@ function place(data) {
     document.getElementById(data.id).textContent = data.symbol;
     if (data.symbol != symbol) {
         board.classList.remove('inactive');
-
     }
     setTimeout(hasCombination, 0);
 }
