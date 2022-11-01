@@ -1,4 +1,3 @@
-/* globals io */
 const board = document.getElementById('board');
 const chatForm = document.getElementById('chatForm');
 const chatArea = document.getElementById('chatArea');
@@ -34,6 +33,7 @@ function init(roomId) {
 
     socket.on('message', (msg) => {
         chatArea.value += `${msg}\n`;
+        chatArea.scrollTop = chatArea.scrollHeight;
     });
 
     socket.on('error', (err) => { alert(err); });
@@ -55,7 +55,7 @@ const combinations = [
 
 function startGame() {
     document.getElementById('init').style.display = 'none';
-    board.style.display = 'inline-block';
+    board.classList.remove('invisible');
     chatForm.classList.remove('invisible');
     board.addEventListener('click', onClick);
 
@@ -64,6 +64,7 @@ function startGame() {
 
 function newGame() {
     [...document.querySelectorAll('.cell')].forEach(e => e.textContent = '');
+    board.classList.remove('inactive');
 }
 
 function onClick(e) {
@@ -81,10 +82,16 @@ function onClick(e) {
 
 function place(data) {
     document.getElementById(data.id).textContent = data.symbol;
+    if (data.symbol != symbol) {
+        board.classList.remove('inactive');
+
+    }
     setTimeout(hasCombination, 0);
 }
 
 function hasCombination() {
+    let draw = true;
+
     for (let combination of combinations) {
         const result = combination.map(pos => document.getElementById(pos).textContent).join('');
 
@@ -93,14 +100,35 @@ function hasCombination() {
         } else if (result == 'OOO') {
             return endGame('O');
         }
+
+        if (result.length < 3) {
+            draw = false;
+        }
+    }
+
+    if (draw == true) {
+        endGame('draw');
     }
 }
 
 function endGame(winner) {
-    const choice = confirm(`Player ${winner} wins!\nDo you want a rematch`);
+    let msg;
+    if (winner == 'draw') {
+        msg = `Game ended as draw!\nDo you want a rematch?`;
+    } else {
+        msg = `Player ${winner} wins!\nDo you want a rematch?`;
+    }
+
+    const choice = confirm(msg);
+    chatArea.value = '';
+
     if (choice) {
-        chatArea.value = '';
         socket.emit('newGame');
+    } else {
+        socket.disconnect();
+        chatForm.classList.add('invisible');
+        document.getElementById('init').style.display = '';
+        board.classList.add('invisible');
     }
 }
 
@@ -110,4 +138,4 @@ function onChat(e) {
         socket.emit('message', messageInput.value);
         messageInput.value = '';
     }
-}
+};
