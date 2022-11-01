@@ -1,6 +1,14 @@
 /* globals io */
+const board = document.getElementById('board');
+const chatForm = document.getElementById('chatForm');
+const chatArea = document.getElementById('chatArea');
+const messageInput = document.getElementById('message');
 
 document.getElementById('init-form').addEventListener('submit', onSubmit);
+chatForm.addEventListener('submit', onChat);
+
+let symbol = '';
+let socket = null;
 
 function onSubmit(e) {
     e.preventDefault();
@@ -24,11 +32,13 @@ function init(roomId) {
         startGame();
     });
 
+    socket.on('message', (msg) => {
+        chatArea.value += `${msg}\n`;
+    });
+
     socket.on('error', (err) => { alert(err); });
 }
 
-let symbol = '';
-let socket = null;
 
 const combinations = [
     ['00', '01', '02'],
@@ -44,9 +54,9 @@ const combinations = [
 
 
 function startGame() {
-    const board = document.getElementById('board');
     document.getElementById('init').style.display = 'none';
-    board.style.display = 'block';
+    board.style.display = 'inline-block';
+    chatForm.classList.remove('invisible');
     board.addEventListener('click', onClick);
 
     newGame();
@@ -57,13 +67,14 @@ function newGame() {
 }
 
 function onClick(e) {
-    if (e.target.classList.contains('cell')) {
+    if (e.target.classList.contains('cell') && board.classList.contains('inactive') == false) {
         if (e.target.textContent == '') {
             const id = e.target.id;
             socket.emit('position', {
                 id,
                 symbol
             });
+            board.classList.add('inactive');
         }
     }
 }
@@ -88,6 +99,15 @@ function hasCombination() {
 function endGame(winner) {
     const choice = confirm(`Player ${winner} wins!\nDo you want a rematch`);
     if (choice) {
+        chatArea.value = '';
         socket.emit('newGame');
+    }
+}
+
+function onChat(e) {
+    e.preventDefault();
+    if (messageInput.value !== '') {
+        socket.emit('message', messageInput.value);
+        messageInput.value = '';
     }
 }

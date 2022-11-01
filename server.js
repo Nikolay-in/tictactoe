@@ -36,8 +36,21 @@ function initGame(roomId, players, socket) {
         io.to(roomId).emit('position', pos);
     });
 
+    socket.on('message', (msg) => {
+        const msgFrom = players.get(socket);
+
+        for (let eachSocket of players.keys()) {
+            eachSocket.emit('message', `Player ${msgFrom}: ${msg}`);
+        }
+    });
+
     socket.on('newGame', () => {
         console.log('New game initiated');
+
+        for (let [socket, symbol] of players.entries()) {
+            socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
+        }
+
         io.to(roomId).emit('newGame');
     });
 
@@ -57,6 +70,7 @@ function initGame(roomId, players, socket) {
     players.set(socket, symbol);
     console.log('Symbol: ', symbol);
     socket.emit('symbol', symbol);
+    socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
 }
 
 server.listen(3000, () => console.log('Server started on 3000'));
