@@ -140,7 +140,7 @@ function onChat(e) {
         socket.emit('message', messageInput.value);
         messageInput.value = '';
     }
-};
+}
 
 function onLeave() {
     chatArea.value = '';
