@@ -2,17 +2,15 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-
 const app = express();
 app.use('/', express.static('static'));
 const server = http.createServer(app);
 const io = socketIO(server);
 
 const rooms = {};
+let rematchVotes = 0;
 
 io.on('connect', socket => {
-    console.log('Player connected');
-
     socket.on('selectRoom', roomId => {
         if (rooms[roomId] == undefined) {
             rooms[roomId] = new Map();
@@ -31,36 +29,6 @@ io.on('connect', socket => {
 });
 
 function initGame(roomId, players, socket) {
-    socket.on('position', pos => {
-        console.log('Position:', pos);
-        io.to(roomId).emit('position', pos);
-    });
-
-    socket.on('message', (msg) => {
-        const msgFrom = players.get(socket);
-
-        for (let eachSocket of players.keys()) {
-            eachSocket.emit('message', `Player ${msgFrom}: ${msg}`);
-        }
-    });
-
-    socket.on('newGame', () => {
-        console.log('New game initiated');
-        socket.emit('message', `System: New Game initiated. Your symbol is: ${players.get(socket)}\n`);
-        io.to(roomId).emit('newGame');
-    });
-
-    socket.on('disconnect', () => {
-        const player = players.get(socket);
-        players.delete(socket);
-
-        for (let eachSocket of players.keys()) {
-            eachSocket.emit('message', `Player ${player} has left.`);
-        }
-
-        console.log('Player left');
-    });
-
     let symbol = 'X';
     if (players.size > 0) {
         const otherSymbol = [...players.values()][0];
@@ -70,14 +38,47 @@ function initGame(roomId, players, socket) {
     }
 
     players.set(socket, symbol);
-    console.log('Symbol: ', symbol);
     socket.emit('symbol', symbol);
-    // socket.emit('message', `System: New Game initiated. Your symbol is: ${symbol}\n`);
 
+    io.to(roomId).emit('message', `Player ${players.get(socket)} has joined.`);
 
-    for (let eachSocket of players.keys()) {
-        eachSocket.emit('message', `Player ${players.get(socket)} has joined.`);
+    socket.on('message', (msg) => {
+        io.to(roomId).emit('message', `Player ${players.get(socket)}: ${msg}`);
+    });
+
+    socket.on('position', pos => {
+        io.to(roomId).emit('position', pos);
+    });
+
+    socket.on('disconnect', () => {
+        const player = players.get(socket);
+        players.delete(socket);
+
+        io.to(roomId).emit('message', `Player ${player} has left.`);
+        io.to(roomId).emit('boardStatus', false);
+        rematchVotes = 0;
+    });
+
+    socket.on('newGame', newGame);
+
+    newGame();
+
+    function newGame(rematchConfirmation) {
+        if (rematchConfirmation == true && players.size == 2) {
+            rematchVotes++;
+        }
+
+        if (players.size == 1 || rematchVotes == 1) {
+            socket.emit('message', `System: Awaiting opponent. Your symbol is: ${symbol}`);
+            io.to(roomId).emit('boardStatus', false);
+        } else if (players.size == 2 && rematchVotes == 0 || rematchVotes == 2) {
+            socket.emit('message', `System: New Game initiated. Your symbol is: ${players.get(socket)}`);
+            io.to(roomId).emit('message', `System: Game started!`);
+            io.to(roomId).emit('boardStatus', true);
+            io.to(roomId).emit('newGame');
+            rematchVotes = 0;
+        }
     }
 }
 
-server.listen(3000, () => console.log('Server started on 3000'));
+server.listen(3000, () => console.log('Server started on: http://localhost:3000'));

@@ -1,19 +1,34 @@
+const initDiv = document.getElementById('init');
 const board = document.getElementById('board');
+const game = document.getElementById('game');
 const chatForm = document.getElementById('chatForm');
 const chatArea = document.getElementById('chatArea');
 const messageInput = document.getElementById('message');
+const roomName = document.getElementById('roomname');
 
 document.getElementById('init-form').addEventListener('submit', onSubmit);
+document.getElementById('leave').addEventListener('click', onLeave);
 chatForm.addEventListener('submit', onChat);
 
 let symbol = '';
 let socket = null;
 
+const combinations = [
+    ['00', '01', '02'],
+    ['10', '11', '12'],
+    ['20', '21', '22'],
+    ['00', '10', '20'],
+    ['01', '11', '21'],
+    ['02', '12', '22'],
+    ['00', '11', '22'],
+    ['02', '11', '20']
+];
+
 function onSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const roomId = formData.get('room');
-
+    roomName.textContent = roomId;
     init(roomId);
 }
 
@@ -27,7 +42,7 @@ function init(roomId) {
     socket.on('symbol', newSymbol => {
         symbol = newSymbol;
         socket.on('position', place);
-        socket.on('newGame', newGame);
+        socket.on('newGame', clearBoard);
         startGame();
     });
 
@@ -36,35 +51,26 @@ function init(roomId) {
         chatArea.scrollTop = chatArea.scrollHeight;
     });
 
+    socket.on('boardStatus', (status) => {
+        if (status == true) {
+            board.classList.remove('inactive');
+        } else {
+            board.classList.add('inactive');
+        }
+    });
+
     socket.on('error', (err) => { alert(err); });
 }
 
-
-const combinations = [
-    ['00', '01', '02'],
-    ['10', '11', '12'],
-    ['20', '21', '22'],
-    ['00', '10', '20'],
-    ['01', '11', '21'],
-    ['02', '12', '22'],
-    ['00', '11', '22'],
-    ['02', '11', '20']
-];
-
-
-
 function startGame() {
-    document.getElementById('init').style.display = 'none';
-    board.classList.remove('invisible');
-    chatForm.classList.remove('invisible');
+    initDiv.style.display = 'none';
+    game.classList.remove('invisible');
     board.addEventListener('click', onClick);
-
-    newGame();
+    clearBoard();
 }
 
-function newGame() {
+function clearBoard() {
     [...document.querySelectorAll('.cell')].forEach(e => e.textContent = '');
-    board.classList.remove('inactive');
 }
 
 function onClick(e) {
@@ -120,15 +126,12 @@ function endGame(winner) {
     }
 
     const choice = confirm(msg);
-    chatArea.value = '';
 
     if (choice) {
-        socket.emit('newGame');
+        socket.emit('newGame', true);
+        clearBoard();
     } else {
-        socket.disconnect();
-        chatForm.classList.add('invisible');
-        document.getElementById('init').style.display = '';
-        board.classList.add('invisible');
+        onLeave();
     }
 }
 
@@ -139,3 +142,12 @@ function onChat(e) {
         messageInput.value = '';
     }
 };
+
+function onLeave() {
+    chatArea.value = '';
+    socket.disconnect();
+    initDiv.style.display = '';
+    game.classList.add('invisible');
+    board.classList.add('inactive');
+    clearBoard();
+}
