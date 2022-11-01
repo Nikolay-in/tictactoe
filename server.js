@@ -50,18 +50,18 @@ function initGame(roomId, players, socket) {
         io.to(roomId).emit('position', pos);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', onDisconnect);
+
+    socket.on('newGame', newGame);
+
+    function onDisconnect() {
         const player = players.get(socket);
         players.delete(socket);
 
         io.to(roomId).emit('message', `Player ${player} has left.`);
         io.to(roomId).emit('boardStatus', false);
         rematchVotes = 0;
-    });
-
-    socket.on('newGame', newGame);
-
-    newGame();
+    }
 
     function newGame(rematchConfirmation) {
         if (rematchConfirmation == true && players.size == 2) {
@@ -79,6 +79,8 @@ function initGame(roomId, players, socket) {
             rematchVotes = 0;
         }
     }
+
+    newGame();
 }
 
 server.listen(3000, () => console.log('Server started on: http://localhost:3000'));
