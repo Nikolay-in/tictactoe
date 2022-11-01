@@ -1,6 +1,6 @@
 #board {
     width: 150px;
-    display: none;
+    display: inline-block;
     cursor: pointer;
 }
 
@@ -38,10 +38,28 @@
 #chatForm {
     display: inline-block;
     margin-left: 25px;
+    width: 450px;
+}
+
+#chatArea {
+    width: 446px;
+    height: 146px
+}
+
+#messageInput {
+    width: 100%;
+    display: table;
+    box-sizing: border-box;
+}
+
+#messageInput .table-cell {
+    display: table-cell;
+    width: 100%;
 }
 
 #message {
-    width: 363px;
+    width: 100%;
+
 }
 
 .invisible {
